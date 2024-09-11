@@ -1,0 +1,12 @@
+services:
+  embedding_model:
+    build: .
+    volumes:
+      - embedding_models:/opt/models
+    command: bash -c 'uvicorn app:app --host=0.0.0.0 --port=8000'
+    ports:
+      - "8000:8000"
+    restart: always
+
+volumes:
+  embedding_models:
