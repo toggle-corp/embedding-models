@@ -18,9 +18,7 @@ def download_models(sent_embedding_model: str):
 
     if not any(os.listdir(models_path)):
         logger.info("Downloading the model")
-        embedding_model_local_path = snapshot_download(
-            repo_id=sent_embedding_model, cache_dir=models_path
-        )
+        embedding_model_local_path = snapshot_download(repo_id=sent_embedding_model, cache_dir=models_path)
         models_info = {
             "model": sent_embedding_model,
             "model_path": embedding_model_local_path,

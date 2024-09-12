@@ -25,9 +25,7 @@ class SentenceTransformerEmbeddingModel(Embeddings):
         Post initialization
         """
         models_info = download_models(sent_embedding_model=self.model)
-        self.st_embedding_model = SentenceTransformer(
-            model_name_or_path=models_info["model_path"]
-        )
+        self.st_embedding_model = SentenceTransformer(model_name_or_path=models_info["model_path"])
 
     def embed_documents(self, texts: list) -> np.ndarray:
         """
@@ -43,9 +41,7 @@ class SentenceTransformerEmbeddingModel(Embeddings):
         v_representation = self.st_embedding_model.encode(text)
         return v_representation.tolist()
 
-    def check_similarity(
-        self, embeddings_1: np.ndarray, embeddings_2: np.ndarray
-    ) -> Tensor:
+    def check_similarity(self, embeddings_1: np.ndarray, embeddings_2: np.ndarray) -> Tensor:
         """
         Computes the cosine similarity between two embeddings
         """
@@ -69,9 +65,7 @@ class OllamaEmbeddingModel(Embeddings):
         """
         Post initialization
         """
-        self.ollama_embed_model = OllamaEmbeddings(
-            model=self.model, base_url=self.base_url
-        )
+        self.ollama_embed_model = OllamaEmbeddings(model=self.model, base_url=self.base_url)
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """

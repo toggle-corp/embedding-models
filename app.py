@@ -63,9 +63,7 @@ async def generate_embeddings(item: RequestSchemaForEmbeddings):
         return generate(em_model=embedding_model, texts=texts)
 
     elif type_model == EmbeddingModelType.OLLAMA:
-        embedding_model = OllamaEmbeddingModel(
-            model=name_model, base_url=base_url
-        )
+        embedding_model = OllamaEmbeddingModel(model=name_model, base_url=base_url)
         return generate(em_model=embedding_model, texts=texts)
 
     elif type_model == EmbeddingModelType.OPENAI:
@@ -83,9 +81,7 @@ async def get_model(item: RequestSchemaForModel):
         embedding_model = SentenceTransformerEmbeddingModel(model=name_model)
         return embedding_model.get_model()
     elif type_model == EmbeddingModelType.OLLAMA:
-        embedding_model = OllamaEmbeddingModel(
-            model=name_model, base_url=base_url
-        )
+        embedding_model = OllamaEmbeddingModel(model=name_model, base_url=base_url)
         return embedding_model.get_model()
     elif type_model == EmbeddingModelType.OPENAI:
         embedding_model = OpenAIEmbeddingModel(model=name_model)
