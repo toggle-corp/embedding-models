@@ -17,6 +17,10 @@ app = FastAPI()
 
 
 class EmbeddingModelType(Enum):
+    """
+    Embedding model types
+    """
+
     SENTENCE_TRANSFORMERS = 1
     OLLAMA = 2
     OPENAI = 3
@@ -31,21 +35,17 @@ class RequestSchemaForEmbeddings(BaseModel):
     base_url: Optional[str] = None
 
 
-class RequestSchemaForModel(BaseModel):
-    """Request Schema"""
-
-    type_model: EmbeddingModelType
-    name_model: str
-    base_url: Optional[str]
-
-
 @app.get("/")
 async def home():
-    return "Embedding handler using models for texts"
+    return "Embedding handler using models for texts", 200
 
 
 @app.post("/get_embeddings")
 async def generate_embeddings(item: RequestSchemaForEmbeddings):
+    """
+    Generates the embedding vectors for the text/documents
+    based on different models
+    """
     type_model = item.type_model
     name_model = item.name_model
     base_url = item.base_url
@@ -69,20 +69,3 @@ async def generate_embeddings(item: RequestSchemaForEmbeddings):
     elif type_model == EmbeddingModelType.OPENAI:
         embedding_model = OpenAIEmbeddingModel(model=name_model)
         return generate(em_model=embedding_model, texts=texts)
-
-
-@app.get("/get_model")
-async def get_model(item: RequestSchemaForModel):
-    type_model = item.type_model
-    name_model = item.name_model
-    base_url = item.base_url
-
-    if type_model == EmbeddingModelType.SENTENCE_TRANSFORMERS:
-        embedding_model = SentenceTransformerEmbeddingModel(model=name_model)
-        return embedding_model.get_model()
-    elif type_model == EmbeddingModelType.OLLAMA:
-        embedding_model = OllamaEmbeddingModel(model=name_model, base_url=base_url)
-        return embedding_model.get_model()
-    elif type_model == EmbeddingModelType.OPENAI:
-        embedding_model = OpenAIEmbeddingModel(model=name_model)
-        return embedding_model.get_model()
