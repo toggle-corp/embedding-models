@@ -8,7 +8,7 @@ from langchain_openai import OpenAIEmbeddings
 from sentence_transformers import SentenceTransformer
 from torch import Tensor
 
-from utils import download_models
+from utils import check_models
 
 
 @dataclass
@@ -24,8 +24,8 @@ class SentenceTransformerEmbeddingModel(Embeddings):
         """
         Post initialization
         """
-        models_info = download_models(sent_embedding_model=self.model)
-        self.st_embedding_model = SentenceTransformer(model_name_or_path=models_info["model_path"])
+        model_path = check_models(sent_embedding_model=self.model)
+        self.st_embedding_model = SentenceTransformer(model_name_or_path=model_path)
 
     def embed_documents(self, texts: list) -> np.ndarray:
         """

@@ -37,6 +37,7 @@ class RequestSchemaForEmbeddings(BaseModel):
 
 @app.get("/")
 async def home():
+    """Returns a message"""
     return Response(content="Embedding handler using models for texts", status_code=status.HTTP_200_OK)
 
 
