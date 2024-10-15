@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@main
       - name: Install poetry
-        run: pipx install poetry --python python3.10
+        run: pipx install poetry
       - uses: actions/setup-python@main
         with:
           cache: 'poetry'
