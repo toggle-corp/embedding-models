@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, Optional, Union
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from pydantic import BaseModel
 
 from embedding_models import (
@@ -37,7 +37,8 @@ class RequestSchemaForEmbeddings(BaseModel):
 
 @app.get("/")
 async def home():
-    return "Embedding handler using models for texts", 200
+    """Returns a message"""
+    return Response(content="Embedding handler using models for texts", status_code=status.HTTP_200_OK)
 
 
 @app.post("/get_embeddings")
