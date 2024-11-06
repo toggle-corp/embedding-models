@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from typing import List, Optional, Union
 
@@ -10,6 +11,10 @@ from embedding_models import (
     OpenAIEmbeddingModel,
     SentenceTransformerEmbeddingModel,
 )
+from reranker import get_scores
+
+# from langchain.schema import Document
+from splitter import get_split_documents_using_token_based
 
 load_dotenv()
 
@@ -33,6 +38,22 @@ class RequestSchemaForEmbeddings(BaseModel):
     name_model: str
     texts: Union[str, List[str]]
     base_url: Optional[str] = None
+
+
+class RequestSchemaForTextSplitter(BaseModel):
+    """Request Schema"""
+
+    model: str
+    documents: str
+    chunk_size: int
+    chunk_overlap: int
+
+
+class RequestSchemaForReRankers(BaseModel):
+    """Request Schema"""
+
+    query: str
+    documents: List[str]
 
 
 @app.get("/")
@@ -70,3 +91,18 @@ async def generate_embeddings(item: RequestSchemaForEmbeddings):
     elif type_model == EmbeddingModelType.OPENAI:
         embedding_model = OpenAIEmbeddingModel(model=name_model)
         return generate(em_model=embedding_model, texts=texts)
+
+
+@app.post("/split_docs_based_on_tokens")
+async def get_split_docs(item: RequestSchemaForTextSplitter):
+    """Splits the documents using the model tokenization method"""
+    docs = json.loads(item.documents)
+    return get_split_documents_using_token_based(
+        model_name=item.model, documents=docs, chunk_size=item.chunk_size, chunk_overlap=item.chunk_overlap
+    )
+
+
+@app.post("/docs_reranking_scores")
+async def get_reranked_docs(item: RequestSchemaForReRankers):
+    """Get reranked documents"""
+    return get_scores(item.query, item.documents)
