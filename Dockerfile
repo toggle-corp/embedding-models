@@ -1,6 +1,7 @@
 FROM python:3.12-slim-bullseye
 
 LABEL maintainer="TC Developers"
+LABEL org.opencontainers.image.source="https://github.com/toggle-corp/embedding-models"
 
 ENV PYTHONUNBUFFERED 1
 
