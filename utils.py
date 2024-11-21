@@ -6,7 +6,7 @@ from pathlib import Path
 from huggingface_hub import snapshot_download
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 
 def download_model(embedding_model: str, models_path: str):
@@ -20,6 +20,8 @@ def check_models(sent_embedding_model: str):
     """Check if the model already exists"""
     models_path = Path("/opt/models")
     models_info_path = models_path / "model_info.json"
+
+    logging.info("Checking models status.")
 
     if not os.path.exists(models_path):
         os.makedirs(models_path)

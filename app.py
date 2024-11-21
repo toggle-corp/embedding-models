@@ -1,6 +1,7 @@
 import json
+import os
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Union
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Response, status
@@ -31,13 +32,25 @@ class EmbeddingModelType(Enum):
     OPENAI = 3
 
 
+MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", "sentence-transformers/gtr-t5-large")
+MODEL_TYPE = EmbeddingModelType(int(os.getenv("EMBEDDING_MODEL_TYPE", "1")))
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", None)
+
+embedding_model = None
+
+if MODEL_TYPE == EmbeddingModelType.SENTENCE_TRANSFORMERS:
+    embedding_model = SentenceTransformerEmbeddingModel(model=MODEL_NAME)
+elif MODEL_TYPE == EmbeddingModelType.OLLAMA:
+    embedding_model = OllamaEmbeddingModel(model=MODEL_NAME, base_url=OLLAMA_BASE_URL)
+elif MODEL_TYPE == EmbeddingModelType.OPENAI:
+    embedding_model = OpenAIEmbeddingModel(model=MODEL_NAME)
+
+
 class RequestSchemaForEmbeddings(BaseModel):
     """Request Schema"""
 
-    type_model: EmbeddingModelType
-    name_model: str
     texts: Union[str, List[str]]
-    base_url: Optional[str] = None
 
 
 class RequestSchemaForTextSplitter(BaseModel):
@@ -68,29 +81,13 @@ async def generate_embeddings(item: RequestSchemaForEmbeddings):
     Generates the embedding vectors for the text/documents
     based on different models
     """
-    type_model = item.type_model
-    name_model = item.name_model
-    base_url = item.base_url
-    texts = item.texts
 
-    def generate(em_model, texts):
-        if isinstance(texts, str):
-            return em_model.embed_query(text=texts)
-        elif isinstance(texts, list):
-            return em_model.embed_documents(texts=texts)
-        return None
-
-    if type_model == EmbeddingModelType.SENTENCE_TRANSFORMERS:
-        embedding_model = SentenceTransformerEmbeddingModel(model=name_model)
-        return generate(em_model=embedding_model, texts=texts)
-
-    elif type_model == EmbeddingModelType.OLLAMA:
-        embedding_model = OllamaEmbeddingModel(model=name_model, base_url=base_url)
-        return generate(em_model=embedding_model, texts=texts)
-
-    elif type_model == EmbeddingModelType.OPENAI:
-        embedding_model = OpenAIEmbeddingModel(model=name_model)
-        return generate(em_model=embedding_model, texts=texts)
+    if embedding_model:
+        if isinstance(item.texts, str):
+            return embedding_model.embed_query(text=item.texts)
+        elif isinstance(item.texts, list):
+            return embedding_model.embed_documents(texts=item.texts)
+    return []
 
 
 @app.post("/split_docs_based_on_tokens")
