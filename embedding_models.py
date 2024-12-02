@@ -25,7 +25,7 @@ class SentenceTransformerEmbeddingModel(Embeddings):
         Post initialization
         """
         model_path = check_models(sent_embedding_model=self.model)
-        self.st_embedding_model = SentenceTransformer(model_name_or_path=model_path)
+        self.st_embedding_model = SentenceTransformer(model_name_or_path=model_path, trust_remote_code=True)
 
     def embed_documents(self, texts: list) -> np.ndarray:
         """
